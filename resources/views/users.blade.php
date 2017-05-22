@@ -22,11 +22,38 @@
                 <div class="col-md-8">
                     <h3 class="box-title">Users</h3>
                 </div>
+                
+                <?php //var_dump($users);
+                ?>
+
                 <div class="col-md-4">
-                    <button type="button" class="btn btn-primary pull-right"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;Add User</button>
+                    <button data-toggle="modal" href="#create-new-user" type="button" class="btn btn-primary pull-right m-l-20 hidden-xs hidden-sm waves-effect waves-light"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;Add User</button>
                 </div>
                 </div>
                 <hr>
+
+                @if (count($errors) > 0)
+                    <div class="alert alert-danger">
+                    <strong>Ooops!</strong> There are some problem with your input.<br><br>
+                    <ul>
+                        @foreach($errors -> all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    </div>
+                @endif
+
+                @if(Session::has('success'))
+                        <div class="alert alert-success">
+                            {{Session::get('success')}}
+                        </div>
+                @endif
+
+                @if(Session::has('fail'))
+                        <div class="alert alert-danger">
+                            {{Session::get('fail')}}
+                        </div>
+                @endif
 
                 <div class="row">
                     <div class="col-sm-12">
@@ -41,27 +68,40 @@
                                             <th>Designation</th>
                                             <th>ID No.</th>
                                             <th>Phone No.</th>
-                                            <th class="text-nowrap">Action</th>
+                                            <th class="text-nowrap text-center">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <?php $i = 1; ?>
+                                        @foreach($users as $user)
                                         <tr>
-                                            <td>Lunar probe project</td>
+                                            <td>{{$i++}}</td>
                                             {{-- <td>
                                                 <div class="progress progress-xs margin-vertical-10 ">
                                                     <div class="progress-bar progress-bar-danger" style="width: 35%"></div>
                                                 </div>
                                             </td> --}}
-                                            <td>Lunar probe project</td>
-                                            <td>Lunar probe project</td>
-                                            <td>Lunar probe project</td>
-                                            <td>Lunar probe project</td>
-                                            <td>May 15, 2015</td>
-                                            <td class="text-nowrap">
-                                                <a href="#" data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                                <a href="#" data-toggle="tooltip" data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                                            <td>{{$user->name}}</td>
+                                            <td>{{$user->nickname}}</td>
+                                            <td>{{$user->designation}}</td>
+                                            <td>{{$user->id_no}}</td>
+                                            <td>{{$user->phone}}</td>
+                                            <td class="text-nowrap text-center">
+                                                @if($user->email != NULL) <i class="fa fa-user-secret" aria-hidden="true" data-toggle="tooltip" title="Administrator"></i>
+                                                @else
+                                                <span data-toggle="tooltip" data-original-title="Edit">
+                                                <a href="{{ action('HomeController@user_edit', $user->id) }}"
+                                                     data-toggle="modal" 
+                                                     data-target="#editUser-{{$user->id}}">
+                                                <i class="fa fa-pencil text-inverse m-r-10"></i></a>
+                                                </span>
+                                                <a href="{{action('HomeController@user_delete', $user->id)}}" data-toggle="tooltip" data-original-title="Delete" onclick="return confirm('Are you sure you want to delete?');"><i class="fa fa-close text-danger"></i></a>
+                                                @endif
+                                                @include('users-edit')
                                             </td>
                                         </tr>
+                                        
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -73,5 +113,7 @@
             
         </div>
     </div>
+
+@include('users-create')
 
 @endsection
