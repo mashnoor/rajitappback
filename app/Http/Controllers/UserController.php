@@ -15,6 +15,9 @@ class UserController extends Controller
         $designation = $request->input('user_designation', '');
         $user_id = $request->input('user_id_no', '');
         $user_phone = $request->input('user_phone');
+        $image_file = $request->file('image');
+        $sector = $request->input('sector');
+        $path = public_path() . ‘/uploads/’;
         if(User::where('phone', '=', $user_phone)->first()!=null)
         {
             return "exists";
@@ -26,6 +29,10 @@ class UserController extends Controller
         $user->designation = $designation;
         $user->id_no = $user_id;
         $user->phone = $user_phone;
+        $user->sector = $sector; 
+        $file_name = $this->generateRandomString(6);       
+        $file->move($path, $file_name);
+        $user->imageurl = $file_name;
         $user->save();
         return $user;
     }
@@ -42,6 +49,16 @@ class UserController extends Controller
         {
             return $user;
         }
+    }
+    public function generateRandomString($length)
+    {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 
     public function getallusers()
